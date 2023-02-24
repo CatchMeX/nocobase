@@ -19,7 +19,7 @@ import { removeHiddenTasks, sortTasks } from '../../helpers/other-helper';
 import { wrapper } from './style';
 import { ActionContext } from '../../../action';
 import { useDesignable } from '../../../../../schema-component';
-import { useBlockRequestContext } from '../../../../../block-provider';
+import { useBlockRequestContext, useTableBlockContext } from '../../../../../block-provider';
 import { RecordProvider } from '../../../../../record-provider';
 
 const getColumnWidth = (dataSetLength: any, clientWidth: any) => {
@@ -118,6 +118,7 @@ export const Gantt: any = (props: any) => {
   const columnWidth: number = getColumnWidth(dateSetup.dates.length, verticalGanttContainerRef.current?.clientWidth);
   const svgWidth = dateSetup.dates.length * columnWidth;
   const ganttFullHeight = barTasks.length * rowHeight;
+  const tableCtx = useTableBlockContext();
 
   // task change events
   useEffect(() => {
@@ -290,6 +291,9 @@ export const Gantt: any = (props: any) => {
     };
   }, [wrapperRef, scrollY, scrollX, ganttHeight, svgWidth, rtl, ganttFullHeight]);
 
+  useEffect(() => {
+    tableCtx.field.onExpandClick = handleTableExpanderClick;
+  }, []);
   const handleScrollY = (event: SyntheticEvent<HTMLDivElement>) => {
     if (scrollY !== event.currentTarget.scrollTop && !ignoreScrollEvent) {
       setScrollY(event.currentTarget.scrollTop);
@@ -371,9 +375,8 @@ export const Gantt: any = (props: any) => {
     setSelectedTask(newSelectedTask);
   };
   const handleTableExpanderClick = (expanded: boolean, record: any) => {
-    const task = tasks.find((v: any) => v.id === record.id + '');
     if (onExpanderClick && record.children.length) {
-      onExpanderClick({ ...task, hideChildren: !expanded });
+      onExpanderClick(record, !expanded);
     }
   };
   const handleProgressChange = async (task: Task) => {

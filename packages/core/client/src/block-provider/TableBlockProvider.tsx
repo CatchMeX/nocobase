@@ -149,7 +149,7 @@ export const useTableBlockProps = () => {
       ctx.service.run({ ...ctx.service.params?.[0], page: current, pageSize, sort });
     },
     onExpand(expanded, record) {
-      ctx?.onExpandClick(expanded, record);
+      ctx?.field?.onExpandClick?.(expanded, record);
     },
   };
 };

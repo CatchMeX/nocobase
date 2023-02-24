@@ -1030,20 +1030,22 @@ export const createGanttBlockSchema = (options) => {
     type: 'void',
     'x-acl-action': `${resource || collection}:list`,
     'x-decorator': 'GanttBlockProvider',
-    'x-decorator-props': {
-      collection: collection,
-      resource: resource || collection,
-      action: 'list',
-      fieldNames: {
-        id: 'id',
-        ...fieldNames,
-      },
-      params: {
-        paginate: false,
-        sort: ['sort'],
-      },
-      ...others,
-    },
+    // 'x-decorator-props': {
+    //   collection: collection,
+    //   resource: resource || collection,
+    //   action: 'list',
+    //   fieldNames: {
+    //     id: 'id',
+    //     ...fieldNames,
+    //   },
+    //   params: {
+    //     paginate: false,
+    //     sort: ['sort'],
+    //     appends: ['children','parent'],
+    //     tree: true,
+    //   },
+    //   ...others,
+    // },
     'x-designer': 'Gantt.Designer',
     'x-component': 'CardItem',
     properties: {
