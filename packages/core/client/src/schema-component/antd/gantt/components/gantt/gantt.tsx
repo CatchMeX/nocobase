@@ -91,7 +91,8 @@ export const Gantt: any = (props: any) => {
   const { resource, service } = useBlockRequestContext();
   const fieldSchema = useFieldSchema();
   const { fieldNames } = useProps(props);
-  const viewMode = fieldNames.range || 'day';
+  console.log(fieldNames)
+  const viewMode = fieldNames?.range || 'day';
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
   const verticalGanttContainerRef = useRef<HTMLDivElement>(null);
@@ -384,7 +385,7 @@ export const Gantt: any = (props: any) => {
       filterByTk: task.id,
       values: {
         ...task,
-        [fieldNames.progress]: task.progress / 100,
+        [fieldNames?.progress]: task.progress / 100,
       },
     });
     await service?.refresh();
@@ -394,8 +395,8 @@ export const Gantt: any = (props: any) => {
       filterByTk: task.id,
       values: {
         ...task,
-        [fieldNames.start]: task.start,
-        [fieldNames.end]: task.end,
+        [fieldNames?.start]: task.start,
+        [fieldNames?.end]: task.end,
       },
     });
     await service?.refresh();
@@ -446,7 +447,7 @@ export const Gantt: any = (props: any) => {
     setFailedTask,
     setSelectedTask: handleSelectedTask,
     onDateChange: handleTaskChange,
-    onProgressChange: fieldNames.progress && handleProgressChange,
+    onProgressChange: fieldNames?.progress && handleProgressChange,
     onDoubleClick,
     onClick: handleBarClick,
     onDelete,
