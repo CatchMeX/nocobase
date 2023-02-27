@@ -34,7 +34,7 @@ function renderTemplate(str: string, data: any) {
   });
 }
 
-function isURL(string) {
+export function isURL(string) {
   let url;
 
   try {
@@ -69,7 +69,7 @@ const filterValue = (value) => {
   return obj;
 };
 
-function getFormValues(filterByTk, field, form, fieldNames, getField, resource) {
+export function getFormValues(filterByTk, field, form, fieldNames, getField, resource) {
   if (filterByTk) {
     const actionFields = field?.data?.activeFields as Set<string>;
     if (actionFields) {

@@ -18,9 +18,10 @@ import { HorizontalScroll } from '../other/horizontal-scroll';
 import { removeHiddenTasks, sortTasks } from '../../helpers/other-helper';
 import { wrapper } from './style';
 import { ActionContext } from '../../../action';
-import { useDesignable } from '../../../../../schema-component';
+import { useDesignable, SchemaComponentOptions } from '../../../../../schema-component';
 import { useBlockRequestContext, useTableBlockContext } from '../../../../../block-provider';
 import { RecordProvider } from '../../../../../record-provider';
+import { useCreateActionProps } from '../../hooks';
 
 const getColumnWidth = (dataSetLength: any, clientWidth: any) => {
   const columnWidth = clientWidth / dataSetLength > 50 ? Math.floor(clientWidth / dataSetLength) + 20 : 50;
@@ -91,7 +92,6 @@ export const Gantt: any = (props: any) => {
   const { resource, service } = useBlockRequestContext();
   const fieldSchema = useFieldSchema();
   const { fieldNames } = useProps(props);
-  console.log(fieldNames)
   const viewMode = fieldNames?.range || 'day';
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
@@ -456,7 +456,9 @@ export const Gantt: any = (props: any) => {
     <div>
       <div>
         <GanttRecordViewer visible={visible} setVisible={setVisible} record={record} />
-        <RecursionField name={'anctionBar'} schema={fieldSchema.properties.toolBar} />
+        <SchemaComponentOptions scope={{ useCreateActionProps }}>
+          <RecursionField name={'anctionBar'} schema={fieldSchema.properties.toolBar} />
+        </SchemaComponentOptions>
         <RecursionField name={'table'} schema={fieldSchema.properties.table} />
         <div className={cx(wrapper)} onKeyDown={handleKeyDown} tabIndex={0} ref={wrapperRef}>
           <TaskGantt
