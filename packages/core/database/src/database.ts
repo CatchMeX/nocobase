@@ -63,6 +63,7 @@ import {
 import { patchSequelizeQueryInterface, snakeCase } from './utils';
 
 import DatabaseUtils from './database-utils';
+import { registerBuiltInListeners } from './listeners';
 import { BaseValueParser, registerFieldValueParsers } from './value-parsers';
 
 export interface MergeOptions extends merge.Options {}
@@ -347,6 +348,8 @@ export class Database extends EventEmitter implements AsyncEmitter {
         options.schema = this.options.schema;
       }
     });
+
+    registerBuiltInListeners(this);
   }
 
   addMigration(item: MigrationItem) {

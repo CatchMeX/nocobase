@@ -4,8 +4,10 @@ import uniq from 'lodash/uniq';
 import React, { createContext, useContext, useEffect } from 'react';
 import { useCollectionManager } from '../collection-manager';
 import { RecordProvider, useRecord } from '../record-provider';
+import { useActionContext } from '../schema-component';
 import { BlockProvider, RenderChildrenWithAssociationFilter, useBlockRequestContext } from './BlockProvider';
 import { useFormBlockContext } from './FormBlockProvider';
+import { IsTreeTableContext } from './TableBlockProvider';
 
 export const TableSelectorContext = createContext<any>({});
 
@@ -18,18 +20,20 @@ const InternalTableSelectorProvider = (props) => {
   // }
   return (
     <RecordProvider record={{}}>
-      <TableSelectorContext.Provider
-        value={{
-          field,
-          service,
-          resource,
-          params,
-          extraFilter,
-          rowKey,
-        }}
-      >
-        <RenderChildrenWithAssociationFilter {...props} />
-      </TableSelectorContext.Provider>
+      <IsTreeTableContext.Provider value={!!useIsEnableTree(props)}>
+        <TableSelectorContext.Provider
+          value={{
+            field,
+            service,
+            resource,
+            params,
+            extraFilter,
+            rowKey,
+          }}
+        >
+          <RenderChildrenWithAssociationFilter {...props} />
+        </TableSelectorContext.Provider>
+      </IsTreeTableContext.Provider>
     </RecordProvider>
   );
 };
@@ -114,6 +118,14 @@ export const TableSelectorProvider = (props) => {
   }
   if (!Object.keys(params).includes('appends')) {
     params['appends'] = appends;
+  }
+  if (useIsEnableTree(props)) {
+    params.tree = true;
+    params.filter = {
+      ...(params.filter ?? {}),
+      parentId: useActionContext().action === 'update' ? null : record?.id ?? null,
+    };
+    params.appends = params.appends ?? useAssociationNames(props.collection).filter((i) => i !== 'children');
   }
   let extraFilter;
   if (collectionField) {
@@ -205,11 +217,14 @@ export const useTableSelectorProps = () => {
       field.componentProps.pagination.current = ctx?.service?.data?.meta?.page;
     }
   }, [ctx?.service?.loading]);
+
+  const rowkey = useContext(IsTreeTableContext) ? '__index' : ctx.rowKey || 'id';
+
   return {
     loading: ctx?.service?.loading,
     showIndex: false,
     dragSort: false,
-    rowKey: ctx.rowKey || 'id',
+    rowKey: rowkey,
     pagination:
       ctx?.params?.paginate !== false
         ? {
@@ -223,8 +238,8 @@ export const useTableSelectorProps = () => {
     },
     async onRowDragEnd({ from, to }) {
       await ctx.resource.move({
-        sourceId: from[ctx.rowKey || 'id'],
-        targetId: to[ctx.rowKey || 'id'],
+        sourceId: from[rowkey],
+        targetId: to[rowkey],
       });
       ctx.service.refresh();
     },
@@ -232,4 +247,9 @@ export const useTableSelectorProps = () => {
       ctx.service.run({ ...ctx.service.params?.[0], page: current, pageSize });
     },
   };
+};
+
+const useIsEnableTree = (props) => {
+  const { getCollection } = useCollectionManager();
+  return getCollection(props.collection).tree === 'adjacencyList';
 };

@@ -37,6 +37,9 @@ export * from './TableSelectorInitializer';
 export * from './UpdateActionInitializer';
 export * from './UpdateSubmitActionInitializer';
 export * from './ViewActionInitializer';
+export * from './CreateChildNodeInitializer';
+export * from './ExpandActionInitializer';
+export * from './CollapseActionInitializer';
 export * from './GanttBlockInitializer'
 
 // association filter

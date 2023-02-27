@@ -1,10 +1,11 @@
 import { ArrayField, createForm } from '@formily/core';
 import { FormContext, Schema, useField, useFieldSchema } from '@formily/react';
 import uniq from 'lodash/uniq';
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useCollectionManager } from '../collection-manager';
 import { BlockProvider, RenderChildrenWithAssociationFilter, useBlockRequestContext } from './BlockProvider';
 import { useFixedSchema } from '../schema-component';
+import { SchemaInitializerContext } from '../schema-initializer';
 
 export const TableBlockContext = createContext<any>({});
 
@@ -12,6 +13,11 @@ const InternalTableBlockProvider = (props) => {
   const { params, showIndex, dragSort, rowKey, ...other } = props;
   const field = useField();
   const { resource, service } = useBlockRequestContext();
+  const [expandCount, setExpandCount] = useState(0);
+  const [collapseCount, setCollapseCount] = useState(0);
+  // if (service.loading) {
+  //   return <Spin />;
+  // }
   useFixedSchema();
   return (
     <TableBlockContext.Provider
@@ -23,6 +29,10 @@ const InternalTableBlockProvider = (props) => {
         showIndex,
         dragSort,
         rowKey,
+        expandCount,
+        setExpandCount: () => setExpandCount(expandCount + 1),
+        collapseCount,
+        setCollapseCount: () => setCollapseCount(expandCount + 1),
         ...other,
       }}
     >
@@ -78,6 +88,8 @@ export const useAssociationNames = (collection) => {
   );
 };
 
+export const IsTreeTableContext = createContext(false);
+
 export const TableBlockProvider = (props) => {
   const params = { ...props.params };
   const appends = useAssociationNames(props.collection);
@@ -88,11 +100,20 @@ export const TableBlockProvider = (props) => {
   if (!Object.keys(params).includes('appends')) {
     params['appends'] = appends;
   }
+  if (props.treeTable) {
+    params['tree'] = true;
+    params.filter = {
+      ...(params.filter ?? {}),
+      parentId: params.filter?.parentId ?? null,
+    };
+  }
   return (
     <FormContext.Provider value={form}>
-      <BlockProvider {...props} params={params}>
-        <InternalTableBlockProvider {...props} params={params} />
-      </BlockProvider>
+      <IsTreeTableContext.Provider value={props.treeTable}>
+        <BlockProvider {...props} params={params}>
+          <InternalTableBlockProvider {...props} params={params} />
+        </BlockProvider>
+      </IsTreeTableContext.Provider>
     </FormContext.Provider>
   );
 };

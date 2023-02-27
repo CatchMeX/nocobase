@@ -666,6 +666,8 @@ export default {
   'Display page title': '显示页面标题',
   'Edit page title': '编辑页面标题',
   'Enable page tabs': '启用页面选项卡',
+  "Add Child": "新增子记录",
+  "Tree table": "树表格",
   'Column width': '列宽',
   'Sortable': '可排序的',
   'Constant': '常量',
