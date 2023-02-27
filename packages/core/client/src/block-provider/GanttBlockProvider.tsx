@@ -2,6 +2,7 @@ import { useField } from '@formily/react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { BlockProvider, useBlockRequestContext } from './BlockProvider';
 import { TableBlockProvider } from './TableBlockProvider';
+import { useCollectionManager } from '../collection-manager';
 
 export const GanttBlockContext = createContext<any>({});
 
@@ -53,6 +54,8 @@ const InternalGanttBlockProvider = (props) => {
 };
 
 export const GanttBlockProvider = (props) => {
+  const { getCollection } = useCollectionManager();
+  const collection = getCollection(props.collection);
   return (
     <BlockProvider
       {...props}
@@ -60,6 +63,7 @@ export const GanttBlockProvider = (props) => {
     >
       <TableBlockProvider
         {...props}
+        treeTable={!!collection.tree}
         params={{ ...props.params, paginate: false, appends: ['parent'], tree: true, filter: { parentId: null } }}
       >
         <InternalGanttBlockProvider {...props} />

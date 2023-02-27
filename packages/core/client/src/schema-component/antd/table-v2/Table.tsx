@@ -171,6 +171,7 @@ export const Table: any = observer((props: any) => {
     rowSelection,
     rowKey,
     required,
+    onExpand: onExpandChange,
     ...others
   } = { ...others1, ...others2 } as any;
   const onRowDragEnd = useMemoizedFn(others.onRowDragEnd || (() => {}));
@@ -475,6 +476,7 @@ export const Table: any = observer((props: any) => {
                 ? [...expandedKeys, record.__index]
                 : expandedKeys.filter((i) => record.__index !== i);
               setExpandesKeys(newKeys);
+              onExpandChange && onExpandChange(flag, record);
             },
             childrenColumnName: treeTable ? 'children' : 'NO_CHILDREN',
             expandedRowKeys: expandedKeys,
