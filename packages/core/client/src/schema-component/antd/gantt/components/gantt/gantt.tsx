@@ -57,7 +57,7 @@ export const Gantt: any = (props: any) => {
     headerHeight = designable ? 65 : 55,
     listCellWidth = '155px',
     rowHeight = 55,
-    ganttHeight = 400,
+    ganttHeight = 0,
     preStepsCount = 1,
     locale = 'en-GB',
     barFill = 60,
